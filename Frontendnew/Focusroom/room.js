@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3b. Sanctuary Timer & Distraction Tracking
     let tabSwitchCount = 0;
-    
+
     document.getElementById('startReadingBtn').addEventListener('click', () => {
         const duration = parseInt(document.getElementById('timeInput').value) || 30;
         tabSwitchCount = 0;
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('timerActive').style.display = 'block';
         startTimer(duration * 60);
         if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch(() => {});
+            document.documentElement.requestFullscreen().catch(() => { });
         } else if (document.documentElement.webkitRequestFullscreen) {
             document.documentElement.webkitRequestFullscreen();
         }
@@ -144,14 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
         isConfirming = false; // RESET FLAG AFTER
 
         if (confirmed) {
-            const actualMins = Math.floor((parseInt(document.getElementById('timeInput').value)*60 - currentSeconds) / 60) || 0;
+            const actualMins = Math.floor((parseInt(document.getElementById('timeInput').value) * 60 - currentSeconds) / 60) || 0;
             clearInterval(timerInterval);
             timerInterval = null;
             document.getElementById('timerActive').style.display = 'none';
             document.getElementById('timerControl').style.display = 'block';
 
             if (document.fullscreenElement || document.webkitFullscreenElement) {
-                if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
                 else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
 
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ actualMins, tabSwitchCount })
-                }).catch(() => {});
+                }).catch(() => { });
             }
         }
     });
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isConfirming) return; // IGNORE visibility changes from confirm() dialog
         if (document.hidden && timerInterval !== null && currentSessionId) {
             tabSwitchCount++;
-            fetch(`${BASE_URL}/${currentSessionId}/distraction`, { method: 'POST' }).catch(e => {});
+            fetch(`${BASE_URL}/${currentSessionId}/distraction`, { method: 'POST' }).catch(e => { });
             const banner = document.getElementById('distractionBanner');
             banner.style.display = 'block';
             setTimeout(() => banner.style.display = 'none', 4000);
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedTextContext = text;
             document.getElementById('highlightPreview').textContent = text.length > 30 ? text.substring(0, 30) + '...' : text;
             document.getElementById('tutorControls').style.display = 'block';
-            document.getElementById('explanationBox').innerHTML = ""; 
+            document.getElementById('explanationBox').innerHTML = "";
 
             // Add floating button
             let btn = document.getElementById('floatingNoteBtn');
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const range = selection.getRangeAt(0).getBoundingClientRect();
             btn.style.top = `${range.bottom + window.scrollY + 5}px`;
             btn.style.left = `${range.left + window.scrollX}px`;
-            
+
             btn.onclick = () => {
                 navNotes.click();
                 createNewNoteDialog(text);
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             appContainer.classList.add('assistant-active');
             document.getElementById('timerControl').style.display = 'block';
             document.getElementById('timerActive').style.display = 'none';
-        } catch(e) {
+        } catch (e) {
             console.error("Failed to load archive", e);
         }
     };
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`http://localhost:8081/api/analytics/heatmap/${userId}`);
             const data = await res.json();
-            
+
             document.getElementById('totalHoursStat').textContent = Math.round(data.totalMins / 60) + 'h';
             document.getElementById('currentStreakStat').textContent = data.currentStreak + ' days';
             document.getElementById('maxStreakStat').textContent = data.maxStreak + ' days';
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderHeatmap(studyDays) {
         const grid = document.getElementById('heatmapGrid');
         grid.innerHTML = '';
-        
+
         const dayMap = {};
         studyDays.forEach(d => dayMap[d.studyDate] = d.totalMins);
 
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
             const key = d.toISOString().split('T')[0];
             const mins = dayMap[key] || 0;
-            
+
             let lvl = 0;
             if (mins > 0) lvl = 1;
             if (mins >= 30) lvl = 2;
@@ -382,21 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="note-body">${n.content}</div>
                 </div>
             `).join('');
-            if(notes.length === 0) container.innerHTML = "<p>No notes yet.</p>";
-        } catch(e) { container.innerHTML = "Failed to load notes"; }
+            if (notes.length === 0) container.innerHTML = "<p>No notes yet.</p>";
+        } catch (e) { container.innerHTML = "Failed to load notes"; }
     }
 
     function createNewNoteDialog(content) {
         const title = prompt("Enter note title:") || "Quick Note";
         fetch(`http://localhost:8081/api/notes`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, sessionId: currentSessionId, title, content, color: '#FFFDE7', tags: '' })
         }).then(() => loadNotes()).catch(e => console.error(e));
     }
 
     window.deleteNoteApi = async (noteId) => {
-        if(confirm("Delete note?")) {
+        if (confirm("Delete note?")) {
             await fetch(`http://localhost:8081/api/notes/${noteId}`, { method: 'DELETE' });
             loadNotes();
         }

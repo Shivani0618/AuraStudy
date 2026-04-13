@@ -1,0 +1,109 @@
+:root {
+    --espresso: #2D1E17;
+    --cream: #FDF8F2;
+    --beige: #F5EDE4;
+    --gold: #C8A27A;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--espresso);
+    line-height: 1.8;
+}
+
+/* Nav Styling */
+.feature-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 10%;
+    background: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--espresso); font-weight: 800; text-transform: uppercase; }
+.nav-right { display: flex; gap: 2rem; align-items: center; }
+.nav-right a { text-decoration: none; color: var(--espresso); font-weight: 600; font-size: 0.9rem; }
+.nav-btn { background: var(--espresso); color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 8px; text-decoration: none; }
+
+/* Content Section */
+.feature-container {
+    max-width: 900px;
+    margin: 5rem auto;
+    padding: 0 2rem;
+}
+
+.feature-header {
+    margin-bottom: 4rem;
+    border-bottom: 4px solid var(--espresso);
+    padding-bottom: 2rem;
+}
+
+.feature-header h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -2px;
+}
+
+.feature-header p {
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.content-block {
+    margin-bottom: 4rem;
+}
+
+.content-block h2 {
+    font-size: 1.8rem;
+    color: var(--espresso);
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.content-block h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--gold);
+}
+
+.content-block p {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+}
+
+.list-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0,0,0,0.03);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.list-item strong {
+    color: var(--gold);
+    min-width: 140px;
+}
+
+.footer-action {
+    text-align: center;
+    padding: 4rem;
+    background: var(--espresso);
+    color: #fff;
+    margin-top: 6rem;
+}
+
+.footer-action a { color: var(--gold); text-decoration: none; font-weight: 700; }
