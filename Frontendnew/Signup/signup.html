@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Aura Study</title>
+    <!-- Link to the dedicated signup CSS file -->
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body class="signup-page">
+
+    <div class="signup-container">
+        <!-- Left Side: Dynamic Knowledge Aura Visual -->
+        <div class="signup-visual">
+            <div class="aura-glow-bg"></div>
+            
+            <a href="../Home Page/index.html" class="signup-logo">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 15L25 85H38L50 51L62 85H75L50 15Z" fill="#FDF8F2"/>
+                    <ellipse cx="50" cy="55" rx="45" ry="12" stroke="#C8A27A" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+                <span>Aura Study</span>
+            </a>
+
+            <div class="illustration-wrapper">
+                <!-- Dynamic SVG Knowledge Web (Matching Login Visual) -->
+                <svg viewBox="0 0 600 600" class="floating-illustration">
+                    <g class="energy-paths">
+                        <path class="aura-path" d="M300 300 L150 150" stroke="var(--glow-gold)" stroke-width="2" fill="none"/>
+                        <path class="aura-path" d="M300 300 L450 150" stroke="var(--glow-blue)" stroke-width="2" fill="none"/>
+                        <path class="aura-path" d="M300 300 L450 450" stroke="var(--glow-purple)" stroke-width="2" fill="none"/>
+                        <path class="aura-path" d="M300 300 L150 450" stroke="var(--glow-gold)" stroke-width="2" fill="none"/>
+                        <circle cx="300" cy="300" r="200" stroke="rgba(200, 162, 122, 0.1)" stroke-width="1" fill="none" />
+                    </g>
+
+                    <g class="aura-core">
+                        <circle cx="300" cy="300" r="50" fill="#2D1E17" stroke="var(--glow-gold)" stroke-width="3"/>
+                        <path d="M285 300 L300 285 L315 300 L300 315 Z" fill="var(--glow-gold)" />
+                        <circle cx="300" cy="300" r="60" stroke="var(--glow-gold)" stroke-width="1" opacity="0.3" fill="none" />
+                    </g>
+
+                    <g class="aura-node node-focus">
+                        <circle cx="150" cy="150" r="30" fill="rgba(45, 30, 23, 0.8)" stroke="var(--glow-gold)" stroke-width="2"/>
+                        <text x="135" y="155" font-size="12" fill="white" font-weight="bold">FOCUS</text>
+                    </g>
+
+                    <g class="aura-node node-potential">
+                        <circle cx="450" cy="150" r="35" fill="rgba(45, 30, 23, 0.8)" stroke="var(--glow-blue)" stroke-width="2"/>
+                        <text x="415" y="155" font-size="12" fill="white" font-weight="bold">POTENTIAL</text>
+                    </g>
+
+                    <g class="aura-node node-growth">
+                        <circle cx="450" cy="450" r="32" fill="rgba(45, 30, 23, 0.8)" stroke="var(--glow-purple)" stroke-width="2"/>
+                        <text x="425" y="455" font-size="12" fill="white" font-weight="bold">GROWTH</text>
+                    </g>
+
+                    <g class="aura-node node-resources">
+                        <circle cx="150" cy="450" r="30" fill="rgba(45, 30, 23, 0.8)" stroke="var(--glow-gold)" stroke-width="2"/>
+                        <text x="115" y="455" font-size="10" fill="white" font-weight="bold">RESOURCES</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="signup-footer-links">
+                <a href="#">Terms</a>
+                <span>•</span>
+                <a href="#">Privacy</a>
+                <span>•</span>
+                <a href="#">Help</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Signup Form -->
+        <div class="signup-form-side">
+            <div class="signup-card">
+                <div class="signup-header">
+                    <div class="header-top">
+                        <h1>Create Account</h1>
+                        <span class="secure-badge">● Secure</span>
+                    </div>
+                    <p>Start your focused learning journey today</p>
+                </div>
+
+                <form id="signupForm" class="aura-form">
+                    <div class="input-group">
+                        <label for="fullname">Full Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="fullname" placeholder="John Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">✉</span>
+                            <input type="email" id="email" placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="password" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" id="togglePassword">👁</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" required>
+                            <span class="checkmark"></span>
+                            I agree to the Terms and Privacy Policy
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Create Account</button>
+
+                    <div class="separator">
+                        <span>Or sign up with</span>
+                    </div>
+
+                    <button type="button" class="google-btn">
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="18">
+                        Continue with Google
+                    </button>
+                </form>
+
+                <p class="login-prompt">
+                    Already have an account? <a href="../Login/login.html">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="signup.js"></script>
+</body>
+</html>

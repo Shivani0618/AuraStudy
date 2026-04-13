@@ -1,0 +1,140 @@
+/* --- 1. Consolidated Root Variables --- */
+:root {
+    --bg-primary: #FDF8F2;    
+    --bg-secondary: #F5EDE4;  
+    --text-primary: #2D1E17;   
+    --text-secondary: #5C4B40; 
+    --accent-primary: #C8A27A; 
+    --nav-blur: rgba(253, 248, 242, 0.95);
+    --btn-bg: #2D1E17;
+    --btn-text: #FDF8F2;
+    --transition-speed: 0.4s;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+    --bg-primary: #1A120B;    
+    --bg-secondary: #2C1E12;  
+    --text-primary: #FDF8F2;  
+    --text-secondary: #C8A27A; 
+    --nav-blur: rgba(26, 18, 11, 0.95);
+    --btn-bg: #FDF8F2;
+    --btn-text: #1A120B;
+}
+
+/* --- 2. Base Configuration --- */
+html { scroll-behavior: smooth; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+}
+
+/* --- 3. Navigation --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: var(--nav-blur);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(45, 30, 23, 0.08);
+}
+
+.brand-container { display: flex; align-items: center; text-decoration: none; color: var(--text-primary); gap: 12px; }
+.brand-name { font-weight: 850; font-size: 1.1rem; letter-spacing: 0.8px; text-transform: uppercase; }
+.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links { display: flex; list-style: none; gap: 2rem; }
+.nav-links a { text-decoration: none; color: var(--text-primary); font-weight: 700; font-size: 0.95rem; }
+
+.auth-combined { 
+    background: var(--btn-bg); 
+    color: var(--btn-text) !important; 
+    padding: 0.65rem 1.5rem; 
+    border-radius: 10px; 
+    transition: transform 0.2s;
+}
+.auth-combined:hover { transform: translateY(-2px); }
+
+.nav-divider { height: 20px; width: 1px; background: rgba(45, 30, 23, 0.15); }
+
+/* Theme Switch Button */
+.theme-switch {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(45, 30, 23, 0.1);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.sun-icon { display: none; }
+.moon-icon { display: block; }
+
+body.dark-mode .sun-icon { display: block; }
+body.dark-mode .moon-icon { display: none; }
+
+/* --- 4. Hero Section --- */
+.hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 12rem 10% 4rem; min-height: 100vh; }
+.hero-icon { margin-bottom: 2rem; animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+.hero-title { font-size: clamp(3rem, 10vw, 6.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 2rem; letter-spacing: -2.5px; }
+.hero-subtitle { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--text-secondary); max-width: 800px; }
+
+/* --- 5. Features Section --- */
+.features-section { padding: 10rem 10%; position: relative; }
+.section-header { text-align: center; margin-bottom: 5rem; }
+.pre-title { text-transform: uppercase; letter-spacing: 3px; font-size: 0.8rem; font-weight: 800; color: var(--accent-primary); display: block; margin-bottom: 1rem; }
+.section-header h2 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 1.5rem; }
+.title-underline { width: 60px; height: 4px; background: var(--accent-primary); margin: 0 auto; border-radius: 2px; }
+
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem; }
+.feature-card { background: rgba(255, 255, 255, 0.03); padding: 3rem 2rem; border-radius: 24px; border: 1px solid rgba(107, 79, 58, 0.08); transition: transform 0.4s ease; text-align: center; }
+.feature-card:hover { transform: translateY(-10px); background: var(--bg-secondary); border-color: var(--accent-primary); }
+.feature-icon { font-size: 2.5rem; margin-bottom: 1.5rem; }
+.feature-card h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem; }
+.feature-card p { color: var(--text-secondary); font-size: 0.95rem; }
+
+/* --- 6. About Section (Converged) --- */
+.about-section { position: relative; padding: 15rem 10% 5rem; background: var(--bg-secondary); }
+.about-curve-overlay {
+    position: absolute; top: -100px; left: 0; width: 100%; height: 150px;
+    background: var(--bg-primary); border-radius: 0 0 100% 100% / 100%;
+    transition: background var(--transition-speed);
+}
+.about-brand-area { text-align: center; max-width: 700px; margin: 0 auto 6rem; }
+.footer-logo { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+.footer-brand-name { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+.brand-mission { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.8; }
+
+.footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; padding-top: 4rem; border-top: 1px solid rgba(45, 30, 23, 0.1); }
+.footer-col h4 { font-weight: 800; margin-bottom: 1.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 0.8rem; }
+.footer-col a { text-decoration: none; color: var(--text-secondary); font-size: 0.95rem; transition: color 0.2s; }
+.footer-col a:hover { color: var(--accent-primary); }
+.social-links { display: flex; flex-direction: column; gap: 0.8rem; }
+
+.footer-bottom { margin-top: 6rem; text-align: center; padding-top: 2rem; border-top: 1px solid rgba(45, 30, 23, 0.05); font-size: 0.85rem; color: var(--text-secondary); opacity: 0.7; }
+
+/* --- 7. Animations & Visuals --- */
+.bg-visuals { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+.aura-blob { position: absolute; width: 45vw; height: 45vw; background: var(--accent-primary); filter: blur(120px); opacity: 0.08; border-radius: 50%; pointer-events: none; }
+
+.reveal-init { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+.revealed { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 950px) {
+    .nav-links { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 3.5rem; }
+}

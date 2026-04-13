@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Study - Deep Focus & AI Learning</title>
+    <!-- Linking to the external style sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dynamic Background Visuals -->
+    <div class="bg-visuals">
+        <div class="aura-blob" id="auraBlob"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <!-- Logo points to top of the current page -->
+        <a href="#" class="brand-container">
+            <div class="logo-aura">
+                <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 15L25 85H38L50 51L62 85H75L50 15Z" fill="currentColor"/>
+                    <path d="M43.5 68H56.5" stroke="currentColor" stroke-width="6"/>
+                    <ellipse cx="50" cy="55" rx="45" ry="12" stroke="var(--accent-primary)" stroke-width="4" stroke-linecap="round" 
+                             style="filter: drop-shadow(0 0 4px var(--accent-primary));"/>
+                </svg>
+            </div>
+            <span class="brand-name">Aura Study</span>
+        </a>
+        
+        <div class="nav-right">
+            <ul class="nav-links">
+                <!-- Internal Scroll Links (IDs must match sections below) -->
+                <li><a href="#features">Features</a></li>
+                <!-- External Folder Link (Matches your VS Code structure) -->
+                <li><a href="../Focusroom/room.html">Rooms</a></li>
+                <!-- Internal Scroll Link -->
+                <li><a href="#about">About Us</a></li>
+                <!-- External Folder Link -->
+                <li><a href="../Login/login.html" class="auth-combined">Login / Sign Up</a></li>
+            </ul>
+
+            <div class="nav-divider"></div>
+
+            <button class="theme-switch" id="themeToggle" aria-label="Toggle Theme">
+                <span class="moon-icon">🌙</span>
+                <span class="sun-icon">☀️</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="hero">
+        <div class="hero-icon">
+            <svg width="140" height="140" viewBox="0 0 100 100" fill="none">
+                <path d="M50 15L25 85H38L50 51L62 85H75L50 15Z" fill="currentColor"/>
+                <ellipse cx="50" cy="55" rx="45" ry="12" stroke="var(--accent-primary)" stroke-width="5" stroke-linecap="round" 
+                         style="filter: drop-shadow(0 0 12px var(--accent-primary));"/>
+            </svg>
+        </div>
+        
+        <h1 class="hero-title">Deep Focus,<br>Defined by Aura.</h1>
+        <p class="hero-subtitle">
+            Step into a cognitive sanctuary designed for pure flow. Join our AI-enhanced study environments where silence meets collective focus.
+        </p>
+    </main>
+
+    <!-- Features Section (ID used for navigation) -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <span class="pre-title">Core Ecosystem</span>
+            <h2>Why join Aura Study?</h2>
+            <div class="title-underline"></div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>AI-Enhanced Focus</h3>
+                <p>Intelligent environments that adapt to your work patterns, minimizing distractions and maximizing your deep work sessions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Global Community</h3>
+                <p>Study alongside researchers and professionals from every corner of the globe in a shared atmosphere of silence.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3>Dynamic Knowledge Aura</h3>
+                <p>Visualize your progress through our unique Aura system, giving you organic feedback on your learning consistency.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Sanctuary</h3>
+                <p>A safe, moderated space where focus is the priority. Encrypted connections and privacy-first design for your peace of mind.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section (ID used for navigation) -->
+    <section id="about" class="about-section">
+        <!-- Curved overlap for smooth section convergence -->
+        <div class="about-curve-overlay"></div>
+        
+        <div class="about-content">
+            <div class="about-brand-area">
+                <div class="footer-logo">
+                    <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                        <path d="M50 15L25 85H38L50 51L62 85H75L50 15Z" fill="currentColor"/>
+                        <ellipse cx="50" cy="55" rx="45" ry="12" stroke="#C8A27A" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                    <span class="footer-brand-name">Aura Study</span>
+                </div>
+                <p class="brand-mission">Our mission is to harmonize human potential with intelligent focus. We provide the digital architecture for the modern scholar to find their flow.</p>
+            </div>
+
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><a href="#features">Focus with others</a></li>
+                        <li><a href="#features">Pomodoro timer</a></li>
+                        <li><a href="../Focusroom/room.html">Virtual Spaces</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="../Login/login.html">Get started</a></li>
+                        <li><a href="#">Mobile App</a></li>
+                        <li><a href="#">Explore</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">Our Story</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of use</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Socials</h4>
+                    <div class="social-links">
+                        <a href="#">Instagram</a>
+                        <a href="#">Linkedin</a>
+                        <a href="#">Twitter</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Aura Study. Part of the Knowledge Collective.</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
