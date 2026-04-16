@@ -17,7 +17,6 @@ public class PdfService {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            // Clean up the text: remove extra whitespace and empty lines
             return text.replaceAll("\\s+", " ").trim();
         }
     }

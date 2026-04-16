@@ -27,17 +27,19 @@ public class AnalyticsService {
 
     @Transactional
     public void recordStudyDay(Long userId, int durationMins) {
-        if (durationMins <= 0) return;
-        
+        System.out.println("[recordStudyDay] userId=" + userId + " | durationMins=" + durationMins);
+        if (durationMins < 1)
+            return;
+
         LocalDate today = LocalDate.now();
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         StudyDay day = studyDayRepository.findByUserIdAndStudyDate(userId, today)
                 .orElse(new StudyDay(user, today, 0, 0));
-                
+
         day.setTotalMins(day.getTotalMins() + durationMins);
         day.setSessionCount(day.getSessionCount() + 1);
-        
+
         studyDayRepository.save(day);
     }
 
@@ -48,14 +50,14 @@ public class AnalyticsService {
         int totalMins = 0;
         int currentStreak = 0;
         int maxStreak = 0;
-        
+
         // Calculate Streak and totals
         LocalDate prevDate = null;
         int currentCount = 0;
-        
+
         for (StudyDay day : days) {
             totalMins += day.getTotalMins();
-            
+
             if (prevDate == null) {
                 currentCount = 1;
             } else {
@@ -70,7 +72,7 @@ public class AnalyticsService {
             }
             prevDate = day.getStudyDate();
         }
-        
+
         // Check if streak is still active today or yesterday
         if (prevDate != null) {
             LocalDate today = LocalDate.now();

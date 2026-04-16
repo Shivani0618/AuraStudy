@@ -2,55 +2,36 @@ package com.virtualclassroom.study_sanctuary.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notes")
 @Data
-@NoArgsConstructor
 public class Note {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
-    private StudySession session;
-
-    @Column(length = 500)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 20)
-    private String color = "#FFFDE7";
-
-    private String tags;
-
+    private String color;
     private boolean pinned = false;
-
-    @Column(name = "created_at", updatable = false)
-    private java.time.LocalDateTime createdAt;
+    private String tags;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
-    private java.time.LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
+    // Mapping the Relationships
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "session_id")
+    private StudySession session;
 }

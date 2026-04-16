@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Greet the User
-    const userName = localStorage.getItem('fullName') || 'Scholar';
+    const userId = localStorage.getItem('userId');
     const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle && localStorage.getItem('userId')) {
-        heroTitle.innerHTML = `Welcome Back,<br>${userName.split(' ')[0]}.`;
+    if (heroTitle) {
+        if (userId) {
+            const firstName = ('Scholar').split(' ')[0];
+            heroTitle.innerHTML = `Welcome Back,<br>${firstName}!`;
+        }
     }
 
     // 2. Theme Toggle Logic
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         if (fileInput && fileInput.files[0]) formData.append("file", fileInput.files[0]);
-        
+
         formData.append("topic", topic);
         formData.append("duration", duration);
         formData.append("userId", userId);

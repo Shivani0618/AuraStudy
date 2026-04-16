@@ -56,7 +56,7 @@ public class AuthController {
                     "token", token,
                     "userId", user.getId(),
                     "email", user.getEmail(),
-                    "fullName", user.getFullName() // Added this to match your Aura Study UI
+                    "fullName", user.getFullName()
             ));
         }
 

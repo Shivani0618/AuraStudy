@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/study")
-// Global CORS is handled in SecurityConfig, so @CrossOrigin is removed here
 public class StudyController {
 
     @Autowired
@@ -32,7 +31,7 @@ public class StudyController {
     private UserRepository userRepository;
 
     @Autowired
-    private PdfService pdfService; // Capitalized
+    private PdfService pdfService;
 
     /**
      * Generates deep-focus study content based on a topic and optional syllabus PDF.
@@ -87,10 +86,18 @@ public class StudyController {
         int actualMins = payload.containsKey("actualMins") ? Integer.parseInt(payload.get("actualMins").toString()) : 0;
         int tabSwitchCount = payload.containsKey("tabSwitchCount") ? Integer.parseInt(payload.get("tabSwitchCount").toString()) : 0;
 
+        System.out.println("[EndSession] sessionId=" + id + " | actualMins=" + actualMins + " | tabSwitches=" + tabSwitchCount);
+
         return sessionRepository.findById(id).map(session -> {
             session.setDistractions(tabSwitchCount);
             sessionRepository.save(session);
-            analyticsService.recordStudyDay(session.getUser().getId(), actualMins);
+            try {
+                analyticsService.recordStudyDay(session.getUser().getId(), actualMins);
+                System.out.println("[EndSession] recordStudyDay called OK for userId=" + session.getUser().getId());
+            } catch (Exception e) {
+                System.err.println("[EndSession] ERROR in recordStudyDay: " + e.getMessage());
+                e.printStackTrace();
+            }
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }

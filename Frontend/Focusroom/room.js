@@ -122,10 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3b. Sanctuary Timer & Distraction Tracking
     let tabSwitchCount = 0;
+    let sessionStartTime = null; // wall-clock timestamp when reading starts
 
     document.getElementById('startReadingBtn').addEventListener('click', () => {
         const duration = parseInt(document.getElementById('timeInput').value) || 30;
         tabSwitchCount = 0;
+        sessionStartTime = Date.now(); // record the exact moment reading starts
         document.getElementById('timerControl').style.display = 'none';
         document.getElementById('timerActive').style.display = 'block';
         startTimer(duration * 60);
@@ -139,12 +141,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let isConfirming = false; // ADD THIS FLAG
 
     document.getElementById('stopReadingBtn').addEventListener('click', () => {
-        isConfirming = true; // SET FLAG BEFORE confirm()
+        isConfirming = true;
         const confirmed = confirm("Are you sure you want to stop this study session early?");
-        isConfirming = false; // RESET FLAG AFTER
+        isConfirming = false;
 
         if (confirmed) {
-            const actualMins = Math.floor((parseInt(document.getElementById('timeInput').value) * 60 - currentSeconds) / 60) || 0;
+            const elapsedMs = sessionStartTime ? Date.now() - sessionStartTime : 0;
+            const actualMins = Math.max(1, Math.round(elapsedMs / 60000));
+            sessionStartTime = null;
+
+            console.log('[Stop Session] elapsedMs:', elapsedMs, '| actualMins to send:', actualMins, '| sessionId:', currentSessionId);
+
             clearInterval(timerInterval);
             timerInterval = null;
             document.getElementById('timerActive').style.display = 'none';
@@ -160,7 +167,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ actualMins, tabSwitchCount })
-                }).catch(() => { });
+                })
+                .then(res => {
+                    console.log('[Stop Session] Server response status:', res.status, res.ok ? '✅ OK' : '❌ FAILED');
+                    if (!res.ok) res.text().then(t => console.error('[Stop Session] Error body:', t));
+                })
+                .catch(err => console.error('[Stop Session] Network error:', err));
+            } else {
+                console.warn('[Stop Session] No currentSessionId — session was never generated, nothing saved.');
             }
         }
     });
@@ -178,14 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Highlight-to-Explain & Add to Notes Logic
     let selectedTextContext = "";
-    document.addEventListener('click', (e) => {
-        if (e.target.id !== 'floatingNoteBtn') {
-            const btn = document.getElementById('floatingNoteBtn');
-            if (btn) btn.remove();
-        }
+    document.addEventListener('mousedown', (e) => {
+        const btn = document.getElementById('floatingNoteBtn');
+        if (btn && e.target.id !== 'floatingNoteBtn') btn.remove();
     });
 
-    document.getElementById('aiContent').addEventListener('mouseup', async (e) => {
+    const aiContentEl = document.getElementById('aiContent');
+    aiContentEl.addEventListener('mouseup', () => {
         const selection = window.getSelection();
         const text = selection.toString().trim();
         if (text.length > 10) {
@@ -194,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('tutorControls').style.display = 'block';
             document.getElementById('explanationBox').innerHTML = "";
 
-            // Add floating button
+            // Create floating button positioned at end of selection
             let btn = document.getElementById('floatingNoteBtn');
             if (!btn) {
                 btn = document.createElement('button');
@@ -203,13 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.innerHTML = '<i class="fas fa-plus"></i> Add to Notes';
                 document.body.appendChild(btn);
             }
+
+            // Fix: use fixed positioning relative to viewport
             const range = selection.getRangeAt(0).getBoundingClientRect();
-            btn.style.top = `${range.bottom + window.scrollY + 5}px`;
-            btn.style.left = `${range.left + window.scrollX}px`;
+            btn.style.position = 'fixed';
+            btn.style.top = `${range.bottom + 8}px`;
+            btn.style.left = `${range.left}px`;
 
             btn.onclick = () => {
                 navNotes.click();
-                createNewNoteDialog(text);
+                openNoteEditor(text);   // Open the proper editor, not a prompt()
                 btn.remove();
             };
         }
@@ -324,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`http://localhost:8081/api/analytics/heatmap/${userId}`);
             const data = await res.json();
 
-            document.getElementById('totalHoursStat').textContent = Math.round(data.totalMins / 60) + 'h';
+            document.getElementById('totalHoursStat').textContent = data.totalMins + ' mins';
             document.getElementById('currentStreakStat').textContent = data.currentStreak + ' days';
             document.getElementById('maxStreakStat').textContent = data.maxStreak + ' days';
             document.getElementById('distractionsStat').textContent = data.totalDistractions || 0;
@@ -344,63 +360,243 @@ document.addEventListener('DOMContentLoaded', () => {
         studyDays.forEach(d => dayMap[d.studyDate] = d.totalMins);
 
         const today = new Date();
+        const todayKey = today.toISOString().split('T')[0];
         const start = new Date(today);
         start.setFullYear(today.getFullYear() - 1);
 
         for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
             const key = d.toISOString().split('T')[0];
-            const mins = dayMap[key] || 0;
+            let mins = dayMap[key] || 0;
+            const isToday = key === todayKey;
 
+            // Always light up today — at least level-1 so the current day is visible
             let lvl = 0;
             if (mins > 0) lvl = 1;
             if (mins >= 30) lvl = 2;
             if (mins >= 60) lvl = 3;
             if (mins >= 120) lvl = 4;
+            if (isToday && lvl === 0) lvl = 1;
 
             const cell = document.createElement('div');
-            cell.className = `heatmap-cell level-${lvl}`;
-            cell.title = `${key}: ${Math.round(mins / 60 * 10) / 10}h`;
+            cell.className = `heatmap-cell level-${lvl}${isToday ? ' today' : ''}`;
+            cell.title = isToday
+                ? `Today (${key}): ${mins} mins`
+                : `${key}: ${mins} mins`;
             grid.appendChild(cell);
         }
     }
 
-    // 7. Notes System API
+    // 7. Full Notes System
+    let allNotes = [];             // In-memory cache for search/filter
+    let editingNoteId = null;       // null = new note, number = editing existing
+    let selectedNoteColor = '#FFFDE7'; // Default yellow
+    const NOTES_API = 'http://localhost:8081/api/notes';
+
+    // --- Load & Render ---
     async function loadNotes() {
         const container = document.getElementById('notesList');
-        container.innerHTML = "<em>Loading notes...</em>";
+        container.innerHTML = '<div class="notes-loading"><i class="fas fa-spinner fa-spin"></i> Loading notes...</div>';
         try {
-            const res = await fetch(`http://localhost:8081/api/notes/user/${userId}`);
-            const notes = await res.json();
-            container.innerHTML = notes.map(n => `
-                <div class="note-card" style="background: ${n.color}">
-                    <div class="note-header">
-                        <span class="note-title">${n.title || 'Untitled'}</span>
-                        <div class="note-actions">
-                            <button class="delete-btn" onclick="deleteNoteApi(${n.id})" title="Delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="note-body">${n.content}</div>
-                </div>
-            `).join('');
-            if (notes.length === 0) container.innerHTML = "<p>No notes yet.</p>";
-        } catch (e) { container.innerHTML = "Failed to load notes"; }
+            const res = await fetch(`${NOTES_API}/user/${userId}`);
+            if (!res.ok) throw new Error('Server error');
+            allNotes = await res.json();
+            renderNotes(allNotes);
+        } catch (e) {
+            container.innerHTML = '<div class="notes-empty"><i class="fas fa-exclamation-circle"></i><p>Could not load notes. Is the server running?</p></div>';
+        }
     }
 
-    function createNewNoteDialog(content) {
-        const title = prompt("Enter note title:") || "Quick Note";
-        fetch(`http://localhost:8081/api/notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, sessionId: currentSessionId, title, content, color: '#FFFDE7', tags: '' })
-        }).then(() => loadNotes()).catch(e => console.error(e));
+    function renderNotes(notes) {
+        const container = document.getElementById('notesList');
+        // Pinned notes always appear first
+        const sorted = [...notes].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+        if (sorted.length === 0) {
+            container.innerHTML = `
+                <div class="notes-empty">
+                    <i class="fas fa-pen-nib"></i>
+                    <p>No notes yet. Highlight content or click <strong>New Note</strong> to start.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = sorted.map(n => `
+            <div class="note-card ${n.pinned ? 'pinned' : ''}" style="background: ${n.color || '#FFFDE7'}" data-id="${n.id}">
+                ${n.pinned ? '<div class="pin-badge"><i class="fas fa-thumbtack"></i></div>' : ''}
+                <div class="note-header">
+                    <span class="note-title">${escHtml(n.title || 'Untitled')}</span>
+                    <div class="note-actions">
+                        <button class="note-edit-btn" onclick="editNoteById(${n.id})" title="Edit"><i class="fas fa-pen"></i></button>
+                        <button class="delete-btn" onclick="deleteNoteApi(${n.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="note-body">${escHtml(n.content || '')}</div>
+                ${n.tags ? `<div class="note-tags">${n.tags.split(',').map(t => `<span class="tag-chip">${escHtml(t.trim())}</span>`).join('')}</div>` : ''}
+                <div class="note-date">${formatDate(n.updatedAt || n.createdAt)}</div>
+            </div>
+        `).join('');
     }
+
+    // --- Editor Panel Logic ---
+    function openNoteEditor(prefillContent = '', noteId = null) {
+        editingNoteId = noteId;
+        selectedNoteColor = '#FFFDE7';
+
+        document.getElementById('editorPanelTitle').textContent = noteId ? 'Edit Note' : 'New Note';
+        document.getElementById('noteEditorTitle').value = '';
+        document.getElementById('noteEditorContent').value = prefillContent;
+        document.getElementById('noteEditorTags').value = '';
+        document.getElementById('noteEditorPinned').checked = false;
+
+        // If editing an existing note, prefill all fields
+        if (noteId) {
+            const n = allNotes.find(x => x.id === noteId);
+            if (n) {
+                document.getElementById('noteEditorTitle').value = n.title || '';
+                document.getElementById('noteEditorContent').value = n.content || '';
+                document.getElementById('noteEditorTags').value = n.tags || '';
+                document.getElementById('noteEditorPinned').checked = n.pinned || false;
+                selectedNoteColor = n.color || '#FFFDE7';
+            }
+        }
+
+        // Update swatch UI
+        document.querySelectorAll('.swatch').forEach(s => {
+            s.classList.toggle('selected', s.dataset.color === selectedNoteColor);
+        });
+
+        document.getElementById('noteEditorOverlay').classList.add('active');
+        document.getElementById('noteEditorPanel').classList.add('open');
+        document.getElementById('noteEditorContent').focus();
+    }
+
+    function closeNoteEditor() {
+        document.getElementById('noteEditorOverlay').classList.remove('active');
+        document.getElementById('noteEditorPanel').classList.remove('open');
+        editingNoteId = null;
+    }
+
+    async function saveNote() {
+        const title = document.getElementById('noteEditorTitle').value.trim() || 'Quick Note';
+        const content = document.getElementById('noteEditorContent').value.trim();
+        const tags = document.getElementById('noteEditorTags').value.trim();
+        const pinned = document.getElementById('noteEditorPinned').checked;
+
+        if (!content) { alert('Please write something in your note!'); return; }
+
+        const payload = { userId, sessionId: currentSessionId, title, content, color: selectedNoteColor, tags, pinned };
+        const saveBtn = document.getElementById('saveNoteBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+            let res;
+            if (editingNoteId) {
+                res = await fetch(`${NOTES_API}/${editingNoteId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                res = await fetch(NOTES_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            if (!res.ok) {
+                // Surface the actual server error so it's debuggable
+                const errText = await res.text();
+                console.error('Save note failed:', res.status, errText);
+                alert(`Save failed (${res.status}): ${errText || 'Unknown server error'}`);
+                return;   // Keep editor open — do not close
+            }
+
+            closeNoteEditor();
+            await loadNotes();
+
+        } catch (e) {
+            console.error('Network error saving note:', e);
+            alert('Could not reach the server. Make sure Spring Boot is running on port 8081.');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Save Note';
+        }
+    }
+
+    // --- Color swatches ---
+    document.querySelectorAll('.swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+            swatch.classList.add('selected');
+            selectedNoteColor = swatch.dataset.color;
+        });
+    });
+
+    // --- Search ---
+    document.getElementById('notesSearch').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const activeColor = document.querySelector('.color-chip.active')?.dataset.color;
+        let filtered = allNotes.filter(n =>
+            (n.title || '').toLowerCase().includes(query) ||
+            (n.content || '').toLowerCase().includes(query) ||
+            (n.tags || '').toLowerCase().includes(query)
+        );
+        if (activeColor && activeColor !== 'all') {
+            filtered = filtered.filter(n => n.color === activeColor);
+        }
+        renderNotes(filtered);
+    });
+
+    // --- Color filter chips ---
+    document.getElementById('colorFilters').addEventListener('click', (e) => {
+        const chip = e.target.closest('.color-chip');
+        if (!chip) return;
+        document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const color = chip.dataset.color;
+        const query = document.getElementById('notesSearch').value.toLowerCase();
+        let filtered = color === 'all' ? allNotes : allNotes.filter(n => n.color === color);
+        if (query) filtered = filtered.filter(n =>
+            (n.title || '').toLowerCase().includes(query) ||
+            (n.content || '').toLowerCase().includes(query)
+        );
+        renderNotes(filtered);
+    });
+
+    // --- Button event bindings ---
+    document.getElementById('newNoteBtn').addEventListener('click', () => openNoteEditor());
+    document.getElementById('saveNoteBtn').addEventListener('click', saveNote);
+    document.getElementById('closeEditorBtn').addEventListener('click', closeNoteEditor);
+    document.getElementById('cancelNoteBtn').addEventListener('click', closeNoteEditor);
+    document.getElementById('noteEditorOverlay').addEventListener('click', closeNoteEditor);
+
+    // Make editNoteById & deleteNoteApi globally accessible (called from inline onclick)
+    window.editNoteById = (id) => openNoteEditor('', id);
 
     window.deleteNoteApi = async (noteId) => {
-        if (confirm("Delete note?")) {
-            await fetch(`http://localhost:8081/api/notes/${noteId}`, { method: 'DELETE' });
+        if (confirm("Delete this note?")) {
+            await fetch(`${NOTES_API}/${noteId}`, { method: 'DELETE' });
             loadNotes();
         }
     };
+
+    // Compatibility: old createNewNoteDialog used by floating button fallback
+    function createNewNoteDialog(content) {
+        openNoteEditor(content);
+    }
+
+    // --- Utility helpers ---
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function formatDate(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
 
     loadHistory(); // Load on boot
 });
